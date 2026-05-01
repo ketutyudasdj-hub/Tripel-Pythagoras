@@ -1,0 +1,229 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator Tripel Pythagoras Pro</title>
+    <style>
+        :root {
+            --primary: #6c5ce7;
+            --secondary: #a29bfe;
+            --success: #00b894;
+            --error: #d63031;
+            --dark: #2d3436;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            width: 100%;
+            max-width: 420px;
+            text-align: center;
+            transform: translateY(0);
+            transition: all 0.3s ease;
+        }
+
+        h2 { color: var(--dark); margin-bottom: 10px; font-size: 1.5rem; }
+        .subtitle { color: #636e72; font-size: 0.85rem; margin-bottom: 25px; }
+
+        .input-wrapper {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            border: 1px solid #edf2f7;
+        }
+
+        label { 
+            display: block; 
+            margin-bottom: 8px; 
+            font-weight: 700; 
+            color: var(--primary);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #dfe6e9;
+            border-radius: 12px;
+            outline: none;
+            text-align: center;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+            box-sizing: border-box;
+        }
+
+        input:focus { 
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(108, 92, 231, 0.1);
+        }
+
+        .btn-calc {
+            width: 100%;
+            padding: 16px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+            box-shadow: 0 8px 15px rgba(108, 92, 231, 0.2);
+        }
+
+        .btn-calc:hover {
+            transform: translateY(-2px);
+            background: #5b4bc4;
+            box-shadow: 0 12px 20px rgba(108, 92, 231, 0.3);
+        }
+
+        #result-box {
+            margin-top: 25px;
+            padding: 20px;
+            border-radius: 18px;
+            display: none;
+            animation: fadeInScale 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes fadeInScale {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .formula { font-family: 'Courier New', monospace; font-size: 0.9rem; margin-bottom: 10px; color: #2d3436; }
+        .value-output { font-size: 1.8rem; font-weight: 800; color: var(--dark); margin-bottom: 5px; }
+
+        .badge {
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 900;
+            letter-spacing: 1px;
+            margin-top: 10px;
+        }
+
+        .confetti { color: #f1c40f; font-size: 1.2rem; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Pythagoras Master 📐</h2>
+    <p class="subtitle">Isi 2 kolom untuk mencari sisi ke-3 & cek apakah termasuk Tripel Pythagoras.</p>
+    
+    <div class="input-wrapper">
+        <label>Sisi Alas (a)</label>
+        <input type="number" id="valA" placeholder="Contoh: 3">
+    </div>
+    
+    <div class="input-wrapper">
+        <label>Sisi Tegak (b)</label>
+        <input type="number" id="valB" placeholder="Contoh: 4">
+    </div>
+    
+    <div class="input-wrapper">
+        <label>Sisi Miring (c)</label>
+        <input type="number" id="valC" placeholder="Contoh: 5">
+    </div>
+
+    <button class="btn-calc" onclick="calculate()">HITUNG SEKARANG</button>
+
+    <div id="result-box">
+        <div class="formula" id="math-process"></div>
+        <div class="value-output" id="final-val"></div>
+        <div id="tripel-status" class="badge"></div>
+    </div>
+</div>
+
+<script>
+function calculate() {
+    // Ambil input secara dinamis (menggunakan null jika kosong)
+    let aStr = document.getElementById('valA').value;
+    let bStr = document.getElementById('valB').value;
+    let cStr = document.getElementById('valC').value;
+
+    let a = aStr ? parseFloat(aStr) : null;
+    let b = bStr ? parseFloat(bStr) : null;
+    let c = cStr ? parseFloat(cStr) : null;
+    
+    const resBox = document.getElementById('result-box');
+    const mathProc = document.getElementById('math-process');
+    const finalVal = document.getElementById('final-val');
+    const status = document.getElementById('tripel-status');
+
+    let result = 0;
+    let labelText = "";
+
+    // Reset Tampilan
+    resBox.style.display = "none";
+
+    // LOGIKA RUMUS (DIPERBAIKI)
+    if (a !== null && b !== null && c === null) {
+        // Cari Sisi Miring (c)
+        result = Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2));
+        mathProc.innerHTML = `c = √(${a}² + ${b}²)`;
+        labelText = "Sisi c";
+        c = result;
+    } else if (a !== null && c !== null && b === null) {
+        // Cari Sisi Tegak (b)
+        if (c <= a) return alert("Sisi miring (c) harus lebih besar!");
+        result = Math.sqrt(Math.pow(c, 2) - Math.pow(a, 2));
+        mathProc.innerHTML = `b = √(${c}² - ${a}²)`;
+        labelText = "Sisi b";
+        b = result;
+    } else if (b !== null && c !== null && a === null) {
+        // Cari Sisi Alas (a)
+        if (c <= b) return alert("Sisi miring (c) harus lebih besar!");
+        result = Math.sqrt(Math.pow(c, 2) - Math.pow(b, 2));
+        mathProc.innerHTML = `a = √(${c}² - ${b}²)`;
+        labelText = "Sisi a";
+        a = result;
+    } else {
+        alert("Mohon isi tepat DUA kolom saja!");
+        return;
+    }
+
+    // TAMPILKAN HASIL
+    resBox.style.display = "block";
+    finalVal.innerHTML = `${labelText} = ${Number.isInteger(result) ? result : result.toFixed(2)}`;
+
+    // CEK TRIPEL PYTHAGORAS
+    // Syarat: Ketiga sisi harus bilangan bulat (Integer)
+    const isTripel = Number.isInteger(a) && Number.isInteger(b) && Number.isInteger(c);
+
+    if (isTripel) {
+        status.innerHTML = "✨ TRIPEL PYTHAGORAS ✨";
+        status.style.backgroundColor = "#eafaf1";
+        status.style.color = "#00b894";
+        resBox.style.border = "2px solid #00b894";
+        resBox.style.backgroundColor = "#f0fff4";
+    } else {
+        status.innerHTML = "BUKAN TRIPEL (Desimal)";
+        status.style.backgroundColor = "#fff5f5";
+        status.style.color = "#d63031";
+        resBox.style.border = "2px solid #fab1a0";
+        resBox.style.backgroundColor = "#fff5f5";
+    }
+}
+</script>
+
+</body>
+</html>
